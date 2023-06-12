@@ -1,18 +1,74 @@
-/** @type {import('tailwindcss').Config} */
+/**
+ * @type {import('@types/tailwindcss/tailwind-config').TailwindConfig}
+ */
 module.exports = {
   content: [
-    './pages/**/*.{js,ts,jsx,tsx,mdx}',
-    './components/**/*.{js,ts,jsx,tsx,mdx}',
-    './app/**/*.{js,ts,jsx,tsx,mdx}',
+    "./node_modules/react-tailwindcss-datepicker/dist/index.esm.js",
+    "./node_modules/tailwind-datepicker-react/dist/**/*.js",
+    "./node_modules/flowbite-react/**/*.js",
+    "./pages/**/*.{js,ts,jsx,tsx,mdx}",
+    "./components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./public/**/*.html",
   ],
+  plugins: [require("flowbite/plugin")],
   theme: {
     extend: {
+      colors: {
+        primary: {
+          50: "#eff6ff",
+          100: "#dbeafe",
+          200: "#bfdbfe",
+          300: "#93c5fd",
+          400: "#60a5fa",
+          500: "#3b82f6",
+          600: "#2563eb",
+          700: "#1d4ed8",
+          800: "#1e40af",
+          900: "#1e3a8a",
+        },
+      },
       backgroundImage: {
-        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-        'gradient-conic':
-          'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
+        "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
+        "gradient-conic":
+          "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
       },
     },
+    fontFamily: {
+      body: [
+        "Inter",
+        "ui-sans-serif",
+        "system-ui",
+        "-apple-system",
+        "system-ui",
+        "Segoe UI",
+        "Roboto",
+        "Helvetica Neue",
+        "Arial",
+        "Noto Sans",
+        "sans-serif",
+        "Apple Color Emoji",
+        "Segoe UI Emoji",
+        "Segoe UI Symbol",
+        "Noto Color Emoji",
+      ],
+      sans: [
+        "Inter",
+        "ui-sans-serif",
+        "system-ui",
+        "-apple-system",
+        "system-ui",
+        "Segoe UI",
+        "Roboto",
+        "Helvetica Neue",
+        "Arial",
+        "Noto Sans",
+        "sans-serif",
+        "Apple Color Emoji",
+        "Segoe UI Emoji",
+        "Segoe UI Symbol",
+        "Noto Color Emoji",
+      ],
+    },
   },
-  plugins: [],
-}
+};

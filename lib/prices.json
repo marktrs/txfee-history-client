@@ -1,0 +1,6 @@
+{
+  "ETHUSDC": {
+    "provider": "binance",
+    "symbol": "ETHUSDC"
+  }
+}
