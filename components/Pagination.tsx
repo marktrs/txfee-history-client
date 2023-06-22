@@ -37,29 +37,45 @@ const CustomPagination: React.FC<Props> = ({
         className="flex flex-col md:flex-row justify-between items-start md:items-center space-y-3 md:space-y-0 p-4"
         aria-label="Table navigation"
       >
-        <span className="text-sm font-normal text-gray-500 dark:text-gray-400">
-          Showing
-          <span className="font-semibold text-gray-900 dark:text-white px-2">
-            {pageData.from.toLocaleString()}-{pageData.to.toLocaleString()}
+        <div className="mx-auto text-center md:ml-0 md:text-left">
+          <span className="text-sm font-normal text-gray-500 dark:text-gray-400">
+            Showing
+            <span className="font-semibold text-gray-900 dark:text-white px-2">
+              {pageData.from.toLocaleString()}-{pageData.to.toLocaleString()}
+            </span>
+            of
+            <span className="font-semibold text-gray-900 dark:text-white px-2">
+              {pageData.total.toLocaleString()}
+            </span>
+            results from
+            <span className="font-semibold text-gray-900 dark:text-white px-2">
+              {totalPage.toLocaleString()}
+            </span>
+            pages
           </span>
-          of
-          <span className="font-semibold text-gray-900 dark:text-white px-2">
-            {pageData.total.toLocaleString()}
-          </span>
-          results from
-          <span className="font-semibold text-gray-900 dark:text-white px-2">
-            {totalPage.toLocaleString()}
-          </span>
-          pages
-        </span>
-        <Pagination
-          currentPage={txQuery.page}
-          onPageChange={onPageChange}
-          previousLabel=""
-          nextLabel=""
-          showIcons
-          totalPages={totalPage}
-        />
+        </div>
+        <div className="hidden sm:block mx-auto md:mr-0">
+          <Pagination
+            currentPage={txQuery.page}
+            onPageChange={onPageChange}
+            layout="pagination"
+            previousLabel=""
+            nextLabel=""
+            showIcons
+            totalPages={totalPage}
+          />
+        </div>
+        <div className="block sm:hidden mx-auto">
+          <Pagination
+            currentPage={txQuery.page}
+            onPageChange={onPageChange}
+            layout="navigation"
+            previousLabel="Prev"
+            nextLabel="Next"
+            showIcons
+            totalPages={totalPage}
+          />
+        </div>
       </nav>
     </>
   );

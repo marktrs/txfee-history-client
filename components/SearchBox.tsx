@@ -30,7 +30,7 @@ export default function SearchBox({
           type="text"
           id="default-input"
           className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 dark:bg-gray-800 dark:focus:bg-gray-800"
-          placeholder="Search by transaction hash"
+          placeholder="Search transaction by hash within time range"
         />
       </div>
     </form>

@@ -10,30 +10,24 @@ import { useState } from "react";
 import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
 
 type Prices = {
-  ETHUSDC: string;
+  ETHUSDT: string;
 };
 
 export const getServerSideProps: GetServerSideProps<{
   prices: Prices;
 }> = async () => {
   const { latest } = await fetchPriceFromBinance({
-    symbol: "ETHUSDC",
+    symbol: "ETHUSDT",
     limit: 1,
   });
 
   return {
     props: {
       prices: {
-        ETHUSDC: latest,
+        ETHUSDT: latest,
       },
     },
   };
-};
-
-const PageSample = function ({
-  prices,
-}: InferGetServerSidePropsType<typeof getServerSideProps>) {
-  return prices.ETHUSDC;
 };
 
 const Page = function ({
@@ -76,7 +70,7 @@ const Page = function ({
       <div className="mx-auto max-w-screen-2xl px-0 lg:px-12">
         <div className="w-full shadow-md sm:rounded-lg">
           <TableHeader
-            ethPrice={prices.ETHUSDC}
+            ethPrice={prices.ETHUSDT}
             txQuery={txQuery}
             setTxQuery={setTxQuery}
             fetchTxs={fetchTxs}
@@ -88,7 +82,7 @@ const Page = function ({
             fetchTxs={fetchTxs}
           >
             <TransactionTable
-              ethPrice={prices.ETHUSDC}
+              ethPrice={prices.ETHUSDT}
               txs={txs}
               isLoading={isLoading}
             />
