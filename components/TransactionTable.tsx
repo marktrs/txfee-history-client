@@ -1,4 +1,4 @@
-import type { PageQueryData, TransactionQueryDto } from "@/lib/types";
+import BigNumber from "bignumber.js";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import updateLocale from "dayjs/plugin/updateLocale";
@@ -6,7 +6,6 @@ import TableSkeleton from "./TableSkeleton";
 
 dayjs.extend(relativeTime);
 dayjs.extend(updateLocale);
-
 dayjs.updateLocale("en", {
   relativeTime: {
     s: "%d secs",
@@ -18,17 +17,32 @@ dayjs.updateLocale("en", {
 const TransactionTable = function ({
   isLoading,
   txs,
+  ethPrice,
 }: {
   isLoading: boolean;
   txs: any[];
-  pageData: PageQueryData;
-  txQuery: TransactionQueryDto;
+  ethPrice: string;
 }) {
+  const gweiToUSDC = (wei: string) => {
+    const ethGasBN = new BigNumber(wei).div(new BigNumber("1e+18"));
+    const ethPriceBN = new BigNumber(ethPrice);
+    const usdcBN = ethPriceBN.multipliedBy(ethGasBN);
+    return usdcBN.toNumber().toLocaleString();
+  };
+
+  const getTotalGasUsed = (gasPrice: string, gasUsed: string) => {
+    const gasPriceBN = new BigNumber(gasPrice);
+    const gasUsedBN = new BigNumber(gasUsed);
+    const totalGasUsedBN = gasPriceBN.multipliedBy(gasUsedBN);
+    return totalGasUsedBN.toString();
+  };
+
   if (isLoading) return <TableSkeleton />;
+
   if (!txs || txs.length == 0)
     return (
       <p className="p-5 text-center relative bg-white shadow-md dark:bg-gray-800 sm:rounded-b-lg dark:text-white">
-        No transaction data
+        No transaction data, Try re-apply query
       </p>
     );
 
@@ -82,16 +96,16 @@ const TransactionTable = function ({
                   <td className="px-4 py-3">
                     <div className="flex items-center text-sm">
                       <div>
-                        <p className="font-normal">{tx.gas.toLocaleString()}</p>
+                        <p className="font-normal">
+                          $ {gweiToUSDC(getTotalGasUsed(tx.gas_price, tx.gas))}
+                        </p>
                       </div>
                     </div>
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center text-sm">
                       <div>
-                        <p className="font-normal">
-                          {tx.block.toLocaleString()}
-                        </p>
+                        <p className="font-normal">{tx.block}</p>
                       </div>
                     </div>
                   </td>

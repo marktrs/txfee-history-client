@@ -17,8 +17,7 @@ export default function TimeFilter({
 }) {
   return (
     <form className="block lg:flex">
-      <label className="sr-only">Filter transaction by time period</label>
-      <div className="w-full px-0 sm:p-3 lg:py-0">
+      <div className="w-full mb-3 sm:mb-0 sm:mr-3 sm:min-w-fit">
         <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
           Date Range
         </label>
@@ -29,7 +28,7 @@ export default function TimeFilter({
           />
         </div>
       </div>
-      <div className="w-full lg:w-1/2 px-0 sm:p-3 lg:py-0">
+      <div className="w-full mb-3 sm:mb-0 sm:mr-3">
         <label
           htmlFor="start-time-input"
           className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
@@ -46,7 +45,7 @@ export default function TimeFilter({
         />
         <span className="validity"></span>
       </div>
-      <div className="w-full lg:w-1/2 px-0 sm:p-3 lg:py-0">
+      <div className="w-full mb-3 sm:mb-0 sm:mr-3">
         <label
           htmlFor="end-time-input"
           className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"

@@ -6,10 +6,12 @@ import SearchBox from "./SearchBox";
 import TimeFilter from "./TimeFilter";
 
 const TableHeader = ({
+  ethPrice,
   txQuery,
   setTxQuery,
   fetchTxs,
 }: {
+  ethPrice: string;
   txQuery: TransactionQueryDto;
   setTxQuery: (txQuery: TransactionQueryDto) => void;
   fetchTxs: () => void;
@@ -73,13 +75,13 @@ const TableHeader = ({
         <div className="flex item-end">
           <div className="text-bold text-gray-500 dark:text-white mr-6 md:mr-32">
             <div className="text-sm font-medium mb-1">ETH price</div>
-            <div className="text-sm font-thin">$ 123.45</div>
+            <div className="text-sm font-light">$ {ethPrice}</div>
           </div>
           <DarkThemeToggle className="ml-auto w-10 h-10" />
         </div>
       </div>
       <hr />
-      <div className="flex-row content-center items-end justify-between p-4 space-y-3 lg:flex sm:space-y-0 sm:space-x-4">
+      <div className="flex-row content-center items-end justify-between p-4 space-y-3 lg:flex sm:pb-0">
         <div className="w-full lg:w-10/12">
           <TimeFilter
             dateRange={dateRange}
@@ -96,8 +98,8 @@ const TableHeader = ({
           />
         </div>
       </div>
-      <div className="flex-row content-center items-end justify-between p-4 space-y-3 lg:flex sm:space-y-0 sm:space-x-4">
-        <div className="w-full lg:w-10/12">
+      <div className="flex-row content-center items-end justify-between p-4 space-y-3 lg:flex sm:pt-0">
+        <div className="w-full lg:w-10/12 mr-0 sm:mr-3">
           <SearchBox
             fetchTxs={fetchTxs}
             searchQuery={searchQuery}

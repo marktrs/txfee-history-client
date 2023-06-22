@@ -12,17 +12,31 @@ export const fetchTxsFromQuery = async function ({
 
   const headers = new Headers();
   headers.append("Prefer", "count=exact");
-
-  url.pathname = "/events";
-
   const requestOptions = {
     method: "GET",
     headers: headers,
   };
 
+  url.pathname = "/events";
+  url.search = prepareTxQryParam({ txQuery });
+
+  const res = await fetch(url.toString(), requestOptions);
+  if (!res.ok) {
+    throw new Error("Failed to fetch transaction data");
+  }
+
+  const transactions = await res.json();
+  const pageData = getPaginationData(res.headers.get("Content-Range"));
+
+  return {
+    transactions,
+    pageData,
+  };
+};
+
+const prepareTxQryParam = ({ txQuery }: { txQuery: TransactionQueryDto }) => {
   const searchParams = new URLSearchParams();
   searchParams.append("limit", txQuery.limit.toString() || "50");
-
   // offset start from 0 but page start from 1 so we need to subtract 1
   searchParams.append(
     "offset",
@@ -56,20 +70,7 @@ export const fetchTxsFromQuery = async function ({
     searchParams.append("tx_hash", `imatch.${txQuery.searchQuery}`);
   }
 
-  url.search = searchParams.toString();
-
-  const res = await fetch(url.toString(), requestOptions);
-  if (!res.ok) {
-    throw new Error("Failed to fetch transaction data");
-  }
-
-  const transactions = await res.json();
-  const pageData = getPaginationData(res.headers.get("Content-Range"));
-
-  return {
-    transactions,
-    pageData,
-  };
+  return searchParams.toString();
 };
 
 const getPaginationData = (rangeData: string | null): PageQueryData => {
@@ -91,130 +92,75 @@ const getPaginationData = (rangeData: string | null): PageQueryData => {
   };
 };
 
-export const fetchLatestBlock = async () => {
-  return fetchBlockNumberByTimestamp(dayjs().unix().toString());
-};
-
-export const fetchBlockNumberByTimestamp = async (timestamp: string) => {
+export const fetchPriceFromBinance = async ({
+  symbol,
+  limit,
+}: {
+  symbol: string;
+  limit: number;
+}) => {
   const { provider } = AppConfig();
-  const url = new URL(provider.etherscan.url);
+  const url = new URL(provider.binance.url);
 
-  const apiQuery: Record<string, string> = {
-    module: "block",
-    action: "getblocknobytime",
-    closest: "before",
-    timestamp,
-    apikey: provider.etherscan.apiKey,
+  const headers = new Headers();
+  const requestOptions = {
+    method: "GET",
+    headers: headers,
   };
 
-  url.search = new URLSearchParams(apiQuery).toString();
+  url.pathname = "/api/v3/trades";
+  url.search = preparePriceQryParam(symbol, limit);
 
-  const res = await fetch(url.toString());
-
+  const res = await fetch(url.toString(), requestOptions);
   if (!res.ok) {
-    throw new Error("Failed to fetch latest block number");
+    throw new Error(`Failed to fetch price data for ${symbol}`);
   }
 
   const data = await res.json();
 
-  return data.result;
+  return {
+    latest: parseFloat(data[0].price).toFixed(2),
+  };
 };
 
-// Get transaction details by transaction hash
-export const fetchTxFromHash = async (txHash: string) => {
+export const fetchPriceProxy = async ({
+  symbol,
+  limit,
+}: {
+  symbol: string;
+  limit: number;
+}) => {
   const { provider } = AppConfig();
-  const url = new URL(provider.etherscan.url);
+  const url = new URL(provider.proxy.url);
 
-  const apiQuery: Record<string, string> = {
-    module: "proxy",
-    action: "eth_getTransactionByHash",
-    apikey: provider.etherscan.apiKey,
-    txhash: txHash,
+  const headers = new Headers();
+  headers.append("Content-Type", "application/json");
+
+  var requestOptions = {
+    method: "GET",
+    headers: headers,
   };
 
-  url.search = new URLSearchParams(apiQuery).toString();
+  url.pathname = "/api/price";
+  url.search = preparePriceQryParam(symbol, limit);
 
-  const res = await fetch(url.toString());
-
+  const res = await fetch(url.toString(), requestOptions);
   if (!res.ok) {
-    throw new Error("Failed to fetch transaction count value");
-  }
-
-  const data = await res.json();
-
-  return data.result;
-};
-
-export const fetchETHPrice = async () => {};
-
-// Get total number of transactions by contract address
-export const fetchTxCountByAddress = async (): Promise<number> => {
-  const { provider } = AppConfig();
-  const url = new URL(provider.etherscan.url);
-
-  const apiQuery: Record<string, string> = {
-    module: "proxy",
-    action: "eth_getTransactionCount",
-    address: "0x88e6a0c2ddd26feeb64f039a2c41296fcb3f5640", // TODO: move this address to config
-    tag: "latest",
-    apikey: provider.etherscan.apiKey,
-  };
-
-  url.search = new URLSearchParams(apiQuery).toString();
-
-  const res = await fetch(url.toString());
-
-  if (!res.ok) {
-    throw new Error("Failed to fetch transaction count value");
-  }
-
-  const data = await res.json();
-
-  return hexToInteger(data.result);
-};
-
-const setBlockQueryRangeAsync = async (
-  txQuery: TransactionQueryDto,
-  query: Record<string, string>
-): Promise<Record<string, string>> => {
-  const { dateRange, timeRange } = txQuery;
-
-  // Get start block number from date and time, if not provided, use 0
-  if (dateRange.startDate) {
-    timeRange.startTime = timeRange.startTime || "00:00:00";
-    query.startblock = await fetchBlockNumberByTimestamp(
-      dayjs(
-        `${dateRange.startDate} ${timeRange.startTime}`,
-        "YYYY-MM-DD HH:mm:ss"
-      )
-        .unix()
-        .toString()
+    throw new Error(
+      `Failed to fetch proxy data from ${url.toString} for symbol ${symbol} `
     );
   }
 
-  // Get end block number from date and time, if not provided, use latest block number
-  if (dateRange.endDate) {
-    timeRange.endTime = timeRange.endTime || "23:59:59";
-    query.endblock = await fetchBlockNumberByTimestamp(
-      dayjs(`${dateRange.endDate} ${timeRange.endTime}`, "YYYY-MM-DD HH:mm:ss")
-        .unix()
-        .toString()
-    );
-  } else {
-    // Get latest block number
-    query.endblock = await fetchLatestBlock();
-  }
+  const data = await res.json();
 
-  return query;
+  return {
+    latest: parseFloat(data.latest).toFixed(2),
+  };
 };
 
-const hexToInteger = (hex: string): number => {
-  // Remove any leading "0x" if present
-  if (hex.startsWith("0x")) {
-    hex = hex.substring(2);
-  }
-
-  // Convert the hexadecimal string to an integer using parseInt
-  const decimal = parseInt(hex, 16);
-  return decimal;
+const preparePriceQryParam = (symbol: string, limit: number) => {
+  const searchParams = new URLSearchParams();
+  searchParams.append("limit", limit.toString() || "1");
+  searchParams.append("symbol", symbol);
+  return searchParams.toString();
 };
