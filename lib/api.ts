@@ -123,41 +123,6 @@ export const fetchPriceFromBinance = async ({
   };
 };
 
-export const fetchPriceProxy = async ({
-  symbol,
-  limit,
-}: {
-  symbol: string;
-  limit: number;
-}) => {
-  const { provider } = AppConfig();
-  const url = new URL(provider.proxy.url);
-
-  const headers = new Headers();
-  headers.append("Content-Type", "application/json");
-
-  var requestOptions = {
-    method: "GET",
-    headers: headers,
-  };
-
-  url.pathname = "/api/price";
-  url.search = preparePriceQryParam(symbol, limit);
-
-  const res = await fetch(url.toString(), requestOptions);
-  if (!res.ok) {
-    throw new Error(
-      `Failed to fetch proxy data from ${url.toString} for symbol ${symbol} `
-    );
-  }
-
-  const data = await res.json();
-
-  return {
-    latest: parseFloat(data.latest).toFixed(2),
-  };
-};
-
 const preparePriceQryParam = (symbol: string, limit: number) => {
   const searchParams = new URLSearchParams();
   searchParams.append("limit", limit.toString() || "1");

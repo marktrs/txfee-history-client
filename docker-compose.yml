@@ -1,0 +1,21 @@
+version: '3'
+
+services:
+  client:
+    container_name: txfee-history-client
+    env_file:
+      - .env.local
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        BINANCE_API_URL: https://api.binance.com/
+        INDEXER_API_URL: http://localhost:3000/
+
+    restart: always
+    ports:
+      - 8080:3000
+
+networks:
+  default:
+    name: tx-indexer-network

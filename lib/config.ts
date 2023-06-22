@@ -10,9 +10,6 @@ interface AppConfig {
     indexer: {
       url: string;
     };
-    proxy: {
-      url: string;
-    };
   };
 }
 
@@ -28,9 +25,6 @@ export const AppConfig = (): AppConfig => {
       },
       indexer: {
         url: process.env.INDEXER_API_URL || "",
-      },
-      proxy: {
-        url: process.env.PROXY_API_URL || "",
       },
     },
   };
